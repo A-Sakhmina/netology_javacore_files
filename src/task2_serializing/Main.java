@@ -56,25 +56,32 @@ public class Main {
     }
 
     public static void zipFiles(String filesDirPath, List<String> filesPath) {
-        for (String filePath : filesPath) {
 
-            try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(filesDirPath));//в конструктор передается поток вывода
-                 FileInputStream fis = new FileInputStream(filePath)) { //получает ссылку на поток ввода
-
-                ZipEntry entry = new ZipEntry("packed_files.txt");  //в конструктор передается имя архивируемого файла
-                zout.putNextEntry(entry);   //добавить каждый объект ZipEntry в архив
-                // считываем содержимое файла в массив byte
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                // добавляем содержимое к архиву
-                zout.write(buffer);
-                // закрываем текущую запись для новой записи
-                zout.closeEntry();
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+        try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(filesDirPath));//в конструктор передается поток вывода
+        ) { //получает ссылку на поток ввода
+            int i = 0;
+            for (String filePath : filesPath) {
+                i++;
+                try (FileInputStream fis = new FileInputStream(filePath)) {
+                    ZipEntry entry = new ZipEntry(String.format("packed_save%d.txt", i));  //в конструктор передается имя архивируемого файла
+                    zout.putNextEntry(entry);   //добавить каждый объект ZipEntry в архив
+                    // считываем содержимое файла в массив byte
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);
+                    // добавляем содержимое к архиву
+                    zout.write(buffer);
+                    // закрываем текущую запись для новой записи
+                    zout.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
+        } catch (Exception exp) {
+            System.out.println(exp.getMessage());
         }
+
     }
+
 
     public static void deleteSerializedFiles(List<String> filesPath) {
         for (String file : filesPath) {
